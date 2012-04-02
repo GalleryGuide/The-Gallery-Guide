@@ -1,0 +1,33 @@
+#left, #right, block-views-galleries-block_2, ul.links li, ul.links.inline,
+#topNav, #footer, .fivestar-form-item, .tabs, .block-commentblock, #rightOuter  {
+   display: none;
+}
+
+#centre {
+   width: 100%;
+}
+
+#centreMain {
+   width: 65%;
+}
+
+#centreRight {
+   width:25%;
+}
+
+.header {
+   height: 50px;
+}
+
+.logo img {
+   height:50px;
+   width:227px;
+}
+#block-views-images-block_1 {
+   float:left;
+   margin: 20px;
+}
+
+#centreAdmin {
+	width:95%;
+}
