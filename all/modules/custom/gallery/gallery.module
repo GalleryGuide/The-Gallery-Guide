@@ -1,0 +1,65 @@
+<?php
+// $Id$ 
+
+/**
+ * @file 
+ */
+
+/**
+ * Implementation of hook_block() 
+ */
+function gallery_block($op='list', $delta=0, $edit=array()) {
+  switch ($op) {
+    case 'list':
+
+    case 'view':
+
+    case 'configure':
+
+    case 'save':
+
+  }
+}
+
+/**
+ * Implementation of hook_help() 
+ */
+function gallery_help($path, $arg) {
+
+}
+
+/*
+ * Hide the irrelevant stuff from non-admin users
+ */
+function gallery_form_iid_alter(&$form, &$form_state){
+    global $user;
+    if(!user_access('administer')){
+          $form['form_info'] = array(
+        '#value' => '<pre>'. print_r($form, TRUE) .'</pre>'
+      );
+        $form['options']['#type'] = "hidden";
+        $form['revision_information']['#type'] = "hidden";
+
+    }
+}
+
+function gallery_form_alter(&$form, $form_state, $form_id) {
+    switch ($form_id) {
+        case 'artist_node_form':
+            $form['taxonomy']['tags'][2]['#type'] = 'hidden';
+            break;
+         case 'search_block_form':
+            break;
+        case 'user_login_block':
+            $form['submit']['#suffix'] = '<a id="forgotten" href="/user/password">Forgot password?</a>';
+            break;
+    }
+}
+
+function gallery_comment_form_alter(&$form, &$form_state){
+	$form['edit-subject']['#size'] = "40";
+}
+
+function gallery_link_alter(&$links, $node, $comment = NULL){
+//  dsm($links);
+}

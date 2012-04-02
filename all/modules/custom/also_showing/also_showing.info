@@ -1,0 +1,5 @@
+; $Id$
+name = Also showing
+package = Gallery Guide
+description = Lists other exhibitions at this exhibition's gallery
+core = 6.x

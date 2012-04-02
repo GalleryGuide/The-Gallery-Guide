@@ -1,0 +1,5 @@
+; $Id$
+name = Nearby galleries
+description = Shows a list of nearby galleries
+core = 6.x
+package = Gallery Guide

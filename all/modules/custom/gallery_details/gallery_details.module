@@ -1,0 +1,143 @@
+<?php
+
+// $Id$
+
+define('LINK_DOMAINS', 'aero|arpa|asia|biz|com|cat|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|mobi|local');
+
+function gallery_details_block($op = 'list', $delta = 0, $edit = array()) {
+  switch($op) {
+    case 'list':
+      $blocks = array();
+      $blocks[0] = array(
+        'info' => t('Gallery Details'),
+        'cache' => BLOCK_CACHE_PER_PAGE
+      );
+      return $blocks;
+
+    case 'view':
+      if(arg(0) == "content" || arg(0) == "node") {
+        $block_content = '';
+        $block = array();
+        $nodeid = arg(1);
+
+        $gallery = node_load($nodeid);
+
+        if($gallery->type == 'exhibition') {
+          $gallery_result = db_query('SELECT * FROM {content_field_exhib_gallery} WHERE nid = %d', $nodeid);
+
+          while($galleries = db_fetch_object($gallery_result))
+            $gallery_id = $galleries->field_exhib_gallery_nid;
+
+          $gallery = node_load($gallery_id);
+        }
+
+        $block_content .= '<li class="link">' . l($gallery->title, $gallery->path) . '</li>';
+        if($gallery->location[name])
+          $block_content .= '<li class="locationName">' . $gallery->location[name] . '</li>';
+        $block_content .= '<li class="street">' . $gallery->location[street] . '</li>';
+        if($gallery->location[city] != 'London')
+          $block_content .= '<li class="city">' . $gallery->location[city] . '</li>';
+        $block_content .= '<li class="postcode">' . $gallery->location[postal_code] . '</li>';
+        $block_content .= '<li class="phone">' . $gallery->location[phone] . '</li>';
+
+        if($galleryurl = trim($gallery->field_website[0][url])) {
+          // Check if there is no protocol specified.
+          $protocol_match = preg_match("/^([a-z0-9][a-z0-9\.\-_]*:\/\/)/i", $galleryurl);
+          if(empty($protocol_match)) {
+            // But should there be? Add an automatic http:// if it starts with a domain name.
+            $domain_match = preg_match('/^(([a-z0-9]([a-z0-9\-_]*\.)+)(' . LINK_DOMAINS . '|[a-z]{2}))/i', $galleryurl);
+            if(!empty($domain_match))
+              $url = $protocol . "http://" . $galleryurl;
+          }
+          if(substr_count($galleryurl, 'http://') == 0)
+            $galleryurl = "http://" . $galleryurl;
+
+          $block_content .= '<li class="website"><a href= "' . $galleryurl . '">Website</a></li>';
+        }
+
+        $opening_hours = FALSE;
+        $hours = '';
+
+        $days = array(0 => t('Sun'), 1 => t('Mon'), 2 => t('Tue'),
+          3 => t('Wed'), 4 => t('Thu'),
+          5 => t('Fri'), 6 => t('Sat'));
+
+        foreach($gallery->field_openingtimes as $array) {
+          if(isset($array['starthours'])) {
+            $start = $array['starthours'];
+            $end = $array['endhours'];
+
+            if($start < 1000)
+              $start_hr = substr($start, 0, 1);
+            else
+              $start_hr = substr($start, 0, 2);
+            $start_min = substr($start, strlen($start_hr), 2);
+
+            if($end < 1000)
+              $end_hr = substr($end, 0, 1);
+            else
+              $end_hr = substr($end, 0, 2);
+            $end_min = substr($end, strlen($end_hr), 2);
+
+            $opening_hours = TRUE;
+
+            $hours .= "<li><div class='day'>" . $days[$array['day']] .
+              "</div> : $start_hr.$start_min - $end_hr.$end_min</li>";
+          }
+        }
+        if($opening_hours) {
+          $block_content .= "<h5>Opening hours</h5>";
+          $block_content .= $hours;
+        }
+
+        $admission_std = $gallery->field_admission_std[0]['value'];
+        if($admission_std) {
+          $block_content .= "<h5>Admission</h5>";
+          $admission_conc = $gallery->field_admission_conc[0]['value'];
+          if($admission_std == 0)
+            $admission_std = "Free";
+          else
+            $admission_std = "<span class='admission'>Standard:</span>&pound; $admission_std";
+
+          $block_content .= "<li>" . $admission_std . "</li>";
+
+          if(isset($admission_conc)) {
+            if($admission_conc == 0)
+              $admission_conc = "free";
+            else
+              $admission_conc = "&pound; $admission_conc";
+
+            $block_content .= "<li><span class='admission'>Concessions:</span>" . $admission_conc . "</li>";
+          }
+        }
+
+        $facilities = $gallery->field_facilities;
+        if(sizeof($facilities) > 1) {
+          $block_content .= '<li class="facilities"><h5>Facilities</h5><ul>';
+          foreach($facilities as $key => $value) {
+            $block_content .= "<li>" . $value[value] . "</li>";
+          }
+          $block_content .= "</ul></li>";
+        }
+
+        if(isset($gallery->field_associated[0]['nid'])) {
+          $block_content .= "<li><h5>Associated galleries</h5><ul>";
+          foreach($gallery->field_associated as $array) {
+            $ass = node_load($array['nid']);
+            $postcode = $ass->locations[0]['postal_code'];
+            $postcode = substr($postcode, 0, strcspn($postcode, ' '));
+            $associated = $ass->title . ' ' . $postcode;
+            $block_content .= "<li>" . l($associated, $ass->path) . "</li>";
+          }
+          $block_content .= "</ul></li>";
+        }
+
+        if($block_content == '')
+          $block_content = 'There has been an error';
+
+        $block['subject'] = 'Gallery Details';
+        $block['content'] = $block_content;
+        return $block;
+      }
+  }
+}

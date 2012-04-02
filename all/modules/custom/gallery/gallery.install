@@ -1,0 +1,20 @@
+<?php
+// $Id$ 
+
+/**
+ * @file 
+ */
+
+/**
+ * Implementation of hook_install() 
+ */
+function galleryguide_install() {
+
+}
+
+/**
+ * Implementation of hook_uninstall() 
+ */
+function galleryguide_uninstall() {
+
+}

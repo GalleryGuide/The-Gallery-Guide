@@ -1,0 +1,99 @@
+<?php
+// $Id$
+
+function also_showing_block($op = 'list', $delta = 0, $edit = array()) {
+  switch ($op) {
+    case 'list':
+      $blocks = array();
+      $blocks[0] = array(
+        'info' => t('Also Showing'),
+        'cache' => BLOCK_CACHE_PER_PAGE);
+      return $blocks;
+
+    case 'view':
+      if ( arg(0) == "content" || arg(0) == "node" )
+      {
+         $block_content = '';
+         $block = array();
+         $nodeid = arg(1);
+         
+         if($gallery -> type == 'exhibition')
+         {
+            $gallery_result = db_query('SELECT * FROM {content_field_exhib_gallery} WHERE nid = %d', $nodeid);
+
+            while($galleries = db_fetch_object($gallery_result))
+               $gallery_id = $galleries -> field_exhib_gallery_nid;
+
+            $gallery = node_load($gallery_id);
+         }
+
+         $block_content .= '<li class="link">'.l($gallery -> title, $gallery -> path).'</li>';
+         $block_content .= '<li class="street">'.$gallery -> location[street].'</li>';
+         $block_content .= '<li class="postcode">'.$gallery -> location[postal_code].'</li>';
+         $block_content .= '<li class="phone">'.$gallery -> location[phone].'</li>';
+
+         $url = trim($gallery -> field_website[0][url]);
+
+         // Check if there is no protocol specified.
+         $protocol_match = preg_match("/^([a-z0-9][a-z0-9\.\-_]*:\/\/)/i", $url);
+         if (empty($protocol_match))
+         {
+            // But should there be? Add an automatic http:// if it starts with a domain name.
+            $domain_match = preg_match('/^(([a-z0-9]([a-z0-9\-_]*\.)+)('. LINK_DOMAINS .'|[a-z]{2}))/i', $url);
+            if (!empty($domain_match))
+              $url = $protocol ."http://". $url;
+         }
+
+
+         $block_content .= '<li class="website"><a href= "'. $url .'">Website</a></li>';
+
+         $opening_hours = FALSE;
+         $hours = '';
+
+         $days = array(0 => t('Sunday'), 1 => t('Monday'), 2 => t('Tuesday'),
+            3 => t('Wednesday'), 4 => t('Thursday'),
+            5 => t('Friday'), 6 => t('Saturday') );
+
+         foreach($gallery -> field_openingtimes as $array)
+         {
+            if(isset($array['starthours']))
+            {
+               $opening_hours = TRUE;
+               
+               $hours .= "<li><span class='day'>". $days[$array['day']] .
+               "</span> : " .
+               substr($array['starthours'], 0, 2) . "." .
+               substr($array['starthours'], 2) . " - " .
+               substr($array['endhours'], 0, 2) . "." .
+               substr($array['endhours'], 2) . "</li>";
+            }
+         }
+         if($opening_hours)
+         {
+            $block_content .= "<strong>Opening hours</strong>";
+            $block_content .= $hours;
+         }
+
+
+         $facilities = $gallery -> field_facilities;
+         if(sizeof($facilities) > 1)
+         {
+            $block_content .= '<li class="facilities"><strong>Facilities</strong><ul>';
+            foreach($facilities as $key => $value)
+            {
+               $block_content .= "<li>". $value[value] . "</li>";
+            }
+            $block_content .= "</ul></li>";
+         }
+
+
+
+         if($block_content == '')
+            $block_content = 'There has been an error';
+
+         $block['subject']= 'Gallery Details';
+         $block['content'] = $block_content;
+         return $block;
+      }
+   }
+}

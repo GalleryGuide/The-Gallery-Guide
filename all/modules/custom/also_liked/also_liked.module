@@ -1,0 +1,56 @@
+<?php
+// $Id$
+
+function also_liked_block($op = 'list', $delta = 0, $edit = array()) {
+  switch ($op) {
+    case 'list':
+      $blocks = array();
+      $blocks[0] = array(
+        'info' => t('Also liked'),
+        'cache' => BLOCK_CACHE_PER_PAGE
+        );
+      return $blocks;
+
+    case 'view':
+      global $node;
+      if ( arg(0) == "content" || arg(0) == "node" ) {
+
+         $block = array();
+         $nodes_liked = array();
+         $nodeid = arg(1);
+
+         $users = db_query('SELECT * FROM {votingapi_vote}
+                                   WHERE value > 50 and content_id = %d',$nodeid);
+
+        while($data = db_fetch_object($users))
+        {
+            $user = $data -> uid;
+            $alsoliked = db_query(' SELECT * FROM {votingapi_vote}
+                                WHERE value > 50 and uid = %d', $user);
+
+            while($liked = db_fetch_object($alsoliked))
+            {
+               if($liked -> content_id != $nodeid)
+                  $nodes_liked[] = $liked -> content_id;
+            }
+            $nodes_liked = array_unique($nodes_liked);
+         }
+
+         foreach($nodes_liked as $value)
+         {
+            $node_liked = node_load($value);
+            $block_content .= '<div class="link">'.l($node_liked -> title, $node_liked -> path).'</div>';
+         }
+      }
+
+      if($block_content == '')
+         $block_content = 'This item has not yet been rated by our users.';
+      else
+         $block_content = '<strong>Users who liked this also liked:</strong>'. $block_content;
+
+         
+      $block['subject']= 'Also liked';
+      $block['content'] = $block_content;
+      return $block;
+  }
+}

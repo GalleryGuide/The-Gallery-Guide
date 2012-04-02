@@ -1,0 +1,5 @@
+; $Id$
+name = Exhibition Details
+package = Gallery Guide
+description = Shows information on this exhibition's gallery
+core = 6.x

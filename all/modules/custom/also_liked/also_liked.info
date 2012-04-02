@@ -1,0 +1,6 @@
+; $Id$
+name = Also liked
+package = Gallery Guide
+description = Shows lists of nodes rated highly by users who liked this node
+core = 6.x
+dependencies[] = votingapi

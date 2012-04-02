@@ -1,0 +1,75 @@
+<?php
+
+// $Id$
+
+function exhib_details_block($op = 'list', $delta = 0, $edit = array()) {
+  switch($op) {
+    case 'list':
+      $blocks = array();
+      $blocks[0] = array(
+        'info' => t('Exhibition Details'),
+        'cache' => BLOCK_CACHE_PER_PAGE
+        );
+      return $blocks;
+
+    case 'view':
+      if(arg(0) == "content" || arg(0) == "node") {
+        $block_content = '';
+        $block = array();
+        $nodeid = arg(1);
+
+        $node = node_load($nodeid);
+
+//               $block_content .=  "<pre>";
+//               $block_content .= print_r($node, TRUE);
+//               $block_content .=  "</pre>";
+
+        $datefrom = strtotime($node->field_exhib_dates[0][value]);
+        $dateto = strtotime($node->field_exhib_dates[0][value2]);
+        if(isset($datefrom))
+          $block_content .= "From: " . date("D j M Y", substr($datefrom, 0, 10)) . "<br/>";
+        $block_content .= "To: " . date("D j M Y", $dateto) . "<br/>";
+
+        $admission_std = $node->field_admission_std[0]['value'];
+        if(isset($admission_std)) {
+          $block_content .= "<h5>Admission</h5>";
+          $admission_conc = $node->field_admission_conc[0]['value'];
+          if($admission_std == 0)
+            $admission_std = "free";
+          else
+            $admission_std = "&pound; $admission_std";
+          $block_content .= "<li><span class='admission'>Standard:</span>" . $admission_std . "</li>";
+          if(isset($admission_conc)) {
+            if($admission_conc == 0)
+              $admission_conc = "free";
+            else
+              $admission_conc = "&pound; $admission_conc";
+            $block_content .= "<li><span class='admission'>Concessions:</span>" . $admission_conc . "</li>";
+          }
+        }
+        if(strlen($node->field_exhib_website[0][url])) {
+          $exhiburl = trim($node->field_exhib_website[0][url]);
+          // Check if there is no protocol specified.
+//                  $protocol_match = preg_match("/^([a-z0-9][a-z0-9\.\-_]*:\/\/)/i", $exhiburl);
+//                  if (empty($protocol_match))
+//                  {
+//                     // But should there be? Add an automatic http:// if it starts with a domain name.
+//                     $domain_match = preg_match('/^(([a-z0-9]([a-z0-9\-_]*\.)+)('. LINK_DOMAINS .'|[a-z]{2}))/i', $exhiburl);
+//                     if (!empty($domain_match))
+//                        $exhiburl = $protocol ."http://". $exhiburl;
+//                  }
+
+          if(substr_count('@', $exhiburl))
+            $exhiburl = "mailto:" . $exhiburl;
+          else if(substr_count($exhiburl, 'http://') == 0)
+            $exhiburl = "http://" . $exhiburl;
+
+          $block_content .= '<li class="website"><a href="' . $exhiburl . '">Website</a></li>';
+        }
+      }
+
+      $block['subject'] = 'Exhibition Details';
+      $block['content'] = $block_content;
+      return $block;
+  }
+}

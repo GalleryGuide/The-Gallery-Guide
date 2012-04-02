@@ -1,0 +1,6 @@
+; $Id$ 
+name = Gallery
+description = Various custom features for thegalleryguide.co.uk, including altering forms
+package = Gallery Guide
+version = 1.0
+core = 6.x
