@@ -1,0 +1,80 @@
+/* CSS Mobile Reset */
+html, body {
+    margin: 0;
+    padding: 0; 
+    border: 0;
+}
+
+body {
+    font-family:Arial,  sans-serif;
+    line-height:1.5;
+    font-size:16px;
+    background: #fff;
+    /* padding:5px;*/
+    padding: 0;
+    color: #000;
+    word-wrap: break-word;
+    -webkit-text-size-adjust: none;
+}
+
+h1, h2, h3 {
+    font-weight: bold;
+}
+
+h4, h5, h6{ 
+    font-weight: normal; 
+}
+
+h1 {
+    font-size: 16px;
+}
+
+h2 {
+    font-size: 14px;
+}
+
+h3 {
+    font-size: 12px;
+}
+a, visited {
+    text-decoration: none;
+    color: #C00000;
+}
+p img { float: left; margin: 0 10px 5px 0; padding: 0; }
+
+img { border: 0; max-width: 100%; }
+
+table { width:auto; border-collapse: collapse;border-spacing: 0; }
+
+ul.menu, li, ul.menu li, li.leaf {
+    list-style: none;
+    padding: 0;
+}
+ul.menu, li, ul.menu li, li.leaf a, visited, active {
+    list-style: none;
+    padding: 0;
+    font-size: 12px;
+    font-weight: bold;
+    color: #C00000;
+    margin-bottom:10px;
+    margin-left:0px;
+    
+}
+
+#block-menu-primary-links li {
+    float: left;
+    width: 85px;
+}
+#block-menu-primary-links li a{
+
+}
+
+.block-menu h2,
+#block-menu-primary-links li.first,
+.menu li ul {
+    display: none;
+}
+
+#nav, #before, #main, #after, #footer {
+    clear:both;
+}

@@ -1,0 +1,11 @@
+name = Gallery Guide Mobile
+description = Mobile theme for the gallery guide
+core = 6.x
+engine = phptemplate
+stylesheets[screen][] = mobile.css
+screenshot = screenshot.png
+
+regions[nav] = Navigation
+regions[before] = Before
+regions[after] = After
+regions[footer] = Footer
