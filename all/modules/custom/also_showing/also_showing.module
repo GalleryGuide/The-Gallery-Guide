@@ -5,9 +5,7 @@ function also_showing_block($op = 'list', $delta = 0, $edit = array()) {
   switch ($op) {
     case 'list':
       $blocks = array();
-      $blocks[0] = array(
-        'info' => t('Also Showing'),
-        'cache' => BLOCK_CACHE_PER_PAGE);
+      $blocks[0] = array('info' => t('Also Showing'));
       return $blocks;
 
     case 'view':

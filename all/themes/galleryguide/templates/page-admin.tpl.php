@@ -137,7 +137,10 @@
                   </div>
                </div>
             </div>
-         <?php print $closure;?>
+         <?php
+                           print $closure;
+                           include 'google_analytics.inc';
+         ?>
       </div>
    </body>
 </html>

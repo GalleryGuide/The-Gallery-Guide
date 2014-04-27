@@ -165,7 +165,6 @@ function galleryguide_preprocess_page(&$variables) {
  */
 function galleryguide_preprocess_node(&$vars, $hook) {
   if($vars['node']->type == 'artist') {
-//    dsm($vars['node']);
     $field_date = $vars['node']->field_born[0];
 
     if($field_date['value']) {
