@@ -1,0 +1,48 @@
+<?php
+
+function imagesmush_menu() {
+  $items = array(
+    'admin/imagesmush' => array(
+      'title' => 'Images to be smushed',
+      'page callback' => 'imagesmush_page',
+      'access arguments' => array('administer nodes'),
+    ),
+  );
+  return $items;
+}
+
+function imagesmush_cron() {
+  imagesmush_page();
+}
+
+function imagesmush_page() {
+  $smushed = variable_get('smushed', array());
+
+  $path = file_directory_path() . '/imagecache';
+  $files = file_scan_directory($path, '.jpg');
+  global $base_url;
+  $table = '<table>';
+  $list = '';
+  foreach ($files as $key => $value) {
+    if (!in_array($key, $smushed)) {
+      $file_url = $base_url . '/' . $key;
+      $table .= '<tr><td>' . $file_url . '</td></tr>';
+      $list .= $file_url . ' \n';
+      $smushed[] = $key;
+    }
+  }
+  $table .= '</table>';
+  variable_set('smushed', $smushed);
+  
+  if($list) {
+    $message = array(
+      'to' => 'malcolm@rubydesign.co.uk',
+      'subject' => t('Images to be smushed'),
+      'body' => $list,
+      'headers' => array('From' => 'info@thegalleryguide.co.uk'),
+    );
+
+    drupal_mail_send($message);
+  }
+  return $table;
+}

@@ -1,0 +1,6 @@
+; $Id$
+name = Image Smusher
+description = Image Smush file listing
+core = 6.x
+package = Ruby Design
+dependencies[] = imagecache
